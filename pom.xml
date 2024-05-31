@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.abdullah</groupId>
 	<artifactId>SpringSecurityExample</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-DEV</version>
 	<name>SpringSecurityExample</name>
 	<description>Example project for testing spring security authentication and authorization</description>
 	<properties>
@@ -58,6 +58,23 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+<!--		jjwt dependencies-->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.5</version>
+		</dependency>
+<!--		jjwt dependencies-->
 	</dependencies>
 
 	<build>
