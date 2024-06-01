@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DbUserDetailsService implements UserDetailsService {
+public class UserService implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
 
@@ -39,5 +39,9 @@ public class DbUserDetailsService implements UserDetailsService {
         catch (Exception e){
             throw new RuntimeException("User details not found.");
         }
+    }
+
+    public UserEntity saveUser(UserEntity userData){
+        return userRepository.save(userData);
     }
 }

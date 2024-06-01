@@ -1,5 +1,6 @@
 package com.abdullah.SpringSecurityExample.config;
 
+import com.abdullah.SpringSecurityExample.filter.JwtFilter;
 import com.abdullah.SpringSecurityExample.provider.JwtAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,15 +10,19 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     @Autowired
     JwtAuthenticationProvider jwtAuthenticationProvider;
+    @Autowired
+    JwtFilter jwtFilter;
 
     @Bean
     public AuthenticationManager getAuthenticationManager(AuthenticationConfiguration authenticationConfiguration){
@@ -39,13 +44,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder getEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     SecurityFilterChain filterChain(HttpSecurity http){
         try{
+            http
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .authorizeHttpRequests(authorize -> authorize
+                            .requestMatchers("/api/v1/signup").permitAll()
+                            .requestMatchers("/api/v1/login").permitAll()
+                            .anyRequest().authenticated());
+            http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
             return http.build();
         }
         catch (Exception e) {

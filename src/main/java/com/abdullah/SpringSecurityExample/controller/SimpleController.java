@@ -1,15 +1,86 @@
 package com.abdullah.SpringSecurityExample.controller;
 
+import com.abdullah.SpringSecurityExample.dto.LoginRequestDTO;
 import com.abdullah.SpringSecurityExample.dto.ResponseDTO;
+import com.abdullah.SpringSecurityExample.dto.SignUpRequestDTO;
+import com.abdullah.SpringSecurityExample.entity.UserEntity;
+import com.abdullah.SpringSecurityExample.service.UserService;
+import com.abdullah.SpringSecurityExample.util.JwtUtil;
+import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
 public class SimpleController {
+    @Autowired
+    AuthenticationManager authenticationManager;
+    @Autowired
+    JwtUtil jwtUtil;
+    @Autowired
+    UserService userService;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignUpRequestDTO userData){
+        try{
+            UserEntity user = UserEntity.builder()
+                    .email(userData.getEmail())
+                    .password(passwordEncoder.encode(userData.getPassword()))
+                    .build();
+
+            user = userService.saveUser(user);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseDTO.builder()
+                            .statusCode(HttpStatus.OK)
+                            .message("User sign up successful.")
+                            .data(user.getId())
+                            .build());
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDTO.builder()
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .message("Could not sign up user.")
+                            .data(e.getMessage())
+                            .build());
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginData){
+        try{
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    loginData.getEmail(),
+                    loginData.getPassword()
+            );
+            authenticationManager.authenticate(authToken);
+            String token = jwtUtil.getToken(loginData.getEmail(),"Some random data.");
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseDTO.builder()
+                            .statusCode(HttpStatus.OK)
+                            .message("Login successul")
+                            .data(token)
+                            .build());
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDTO.builder()
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .message("Login attempt failed.")
+                            .data(e.getMessage())
+                            .build());
+        }
+    }
+
     @GetMapping("/message")
     public ResponseEntity<?> getMessage(){
         try{
@@ -22,7 +93,11 @@ public class SimpleController {
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Something went wrong!");
+                    .body(ResponseDTO.builder()
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .message("Something went wrong!")
+                            .data(e.getMessage())
+                            .build());
         }
     }
 }

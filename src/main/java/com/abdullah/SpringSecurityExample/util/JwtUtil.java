@@ -3,6 +3,7 @@ package com.abdullah.SpringSecurityExample.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.KeyGenerator;
@@ -43,15 +44,23 @@ public class JwtUtil {
     }
 
     private Claims getClaims(String token){
-        JwtParser parser = Jwts.parser()
-                .verifyWith(SECRET_KEY)
-                .build();
-        return (Claims) parser.parseSignedClaims(token);
+        try{
+            JwtParser parser = Jwts.parser()
+                    .verifyWith(SECRET_KEY)
+                    .build();
+            return parser.parseSignedClaims(token).getPayload();
+        }
+        catch (SignatureException e){
+            throw new SignatureException("Token signature invalid.");
+        }
+        catch (Exception e){
+            throw new RuntimeException("Token could be parsed.");
+        }
     }
 
     private SecretKey getKey(){
         try{
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("HMAC");
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
             keyGenerator.init(256);
             return keyGenerator.generateKey();
         }
