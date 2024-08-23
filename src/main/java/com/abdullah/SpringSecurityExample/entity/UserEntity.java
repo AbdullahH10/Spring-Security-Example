@@ -1,9 +1,6 @@
 package com.abdullah.SpringSecurityExample.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
@@ -13,7 +10,8 @@ import java.math.BigInteger;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "USER_TBL")
+@Entity()
+@Table(name = "USER_TBL")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

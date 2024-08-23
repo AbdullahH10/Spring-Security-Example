@@ -18,9 +18,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
-        String password = authentication.getCredentials().toString();
+    public Authentication authenticate(Authentication authenticationToken) throws AuthenticationException {
+        String email = authenticationToken.getName();
+        String password = authenticationToken.getCredentials().toString();
 
         UserDetails userDetails = userService.loadUserByUsername(email);
 
@@ -36,7 +36,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             }
             throw new RuntimeException("Wrong password.");
         }
-        throw new RuntimeException("User details not found");
+        throw new RuntimeException("User details not found.");
     }
 
     @Override

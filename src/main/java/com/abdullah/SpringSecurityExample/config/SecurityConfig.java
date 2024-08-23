@@ -34,7 +34,8 @@ public class SecurityConfig {
         }
     }
 
-    @Autowired void registerProvider(AuthenticationManagerBuilder authManBuilder){
+    @Autowired
+    public void registerProvider(AuthenticationManagerBuilder authManBuilder){
         try{
            authManBuilder.authenticationProvider(jwtAuthenticationProvider);
         }
@@ -44,13 +45,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http){
+    public SecurityFilterChain getSecurityFilterChain(HttpSecurity http){
         try{
             http
                     .csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(authorize -> authorize
-                            .requestMatchers("/api/v1/signup").permitAll()
-                            .requestMatchers("/api/v1/login").permitAll()
+                    .authorizeHttpRequests(requests -> requests
+                            .requestMatchers("/signup").permitAll()
+                            .requestMatchers("/login").permitAll()
                             .anyRequest().authenticated());
             http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
             return http.build();
