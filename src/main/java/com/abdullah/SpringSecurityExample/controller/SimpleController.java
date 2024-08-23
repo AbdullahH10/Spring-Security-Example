@@ -6,17 +6,17 @@ import com.abdullah.SpringSecurityExample.dto.SignUpRequestDTO;
 import com.abdullah.SpringSecurityExample.entity.UserEntity;
 import com.abdullah.SpringSecurityExample.service.UserService;
 import com.abdullah.SpringSecurityExample.util.JwtUtil;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping()
 public class SimpleController {
     @Autowired
     AuthenticationManager authenticationManager;
@@ -41,15 +41,15 @@ public class SimpleController {
                     .body(ResponseDTO.builder()
                             .statusCode(HttpStatus.OK)
                             .message("User sign up successful.")
-                            .data(user.getId())
+                            .data("User id is: "+user.getId())
                             .build());
         }
         catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ResponseDTO.builder()
                             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .message("Could not sign up user.")
-                            .data(e.getMessage())
+                            .message("Could not sign up user. "+e.getMessage())
+                            .data(null)
                             .build());
         }
     }
@@ -57,17 +57,17 @@ public class SimpleController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginData){
         try{
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+            Authentication authToken = new UsernamePasswordAuthenticationToken(
                     loginData.getEmail(),
                     loginData.getPassword()
             );
-            authenticationManager.authenticate(authToken);
-            String token = jwtUtil.getToken(loginData.getEmail(),"Some random data.");
+            authToken = authenticationManager.authenticate(authToken);
+            String token = jwtUtil.getToken(loginData.getEmail(),authToken.getAuthorities().toString());
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ResponseDTO.builder()
                             .statusCode(HttpStatus.OK)
-                            .message("Login successul")
+                            .message("Login successful")
                             .data(token)
                             .build());
         }
@@ -75,8 +75,8 @@ public class SimpleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ResponseDTO.builder()
                             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .message("Login attempt failed.")
-                            .data(e.getMessage())
+                            .message("Login attempt failed: "+e.getMessage())
+                            .data(null)
                             .build());
         }
     }
@@ -95,8 +95,8 @@ public class SimpleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ResponseDTO.builder()
                             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .message("Something went wrong!")
-                            .data(e.getMessage())
+                            .message("Something went wrong! "+e.getMessage())
+                            .data(null)
                             .build());
         }
     }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -22,9 +21,8 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try{
-            Optional<UserEntity> userEntityOptional = userRepository.findByEmail(email);
-            if(userEntityOptional.isPresent()){
-                UserEntity user = userEntityOptional.get();
+            UserEntity user = userRepository.findByEmail(email).orElse(null);
+            if(user != null){
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 UserDetails userDetails = User.builder()
                         .username(user.getEmail())
@@ -34,10 +32,10 @@ public class UserService implements UserDetailsService {
 
                 return userDetails;
             }
-            throw new RuntimeException("User not present in database.");
+            throw new RuntimeException("User not found.");
         }
         catch (Exception e){
-            throw new RuntimeException("User details not found.");
+            throw new RuntimeException("Error fetching user details: "+e.getMessage());
         }
     }
 

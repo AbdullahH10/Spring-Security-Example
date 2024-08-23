@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class GlobalErrorController implements ErrorController {
-    @RequestMapping("/api/v1/error")
+    @RequestMapping("/error")
     ResponseEntity<?> error(){
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
                 .body(ResponseDTO.builder()

@@ -14,16 +14,17 @@ import java.util.Date;
 public class JwtUtil {
     private final SecretKey SECRET_KEY = getKey();
 
-    public String getToken(String email,String data){
+    public String getToken(String email,String authorities){
         return Jwts.builder()
                 .subject(email)
-                .claim("data",data)
+                .claim("authorities",authorities)
                 .issuer("Spring Security App")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+(1000*60*10)))
                 .signWith(SECRET_KEY)
                 .compact();
     }
+
     public boolean isValid(String token){
         return getEmail(token) != null && !isExpired(token);
     }
@@ -33,9 +34,9 @@ public class JwtUtil {
         return claims.getSubject();
     }
 
-    public String getData(String token){
+    public String getAuthorities(String token){
         Claims claims = getClaims(token);
-        return (String) claims.get("data");
+        return (String) claims.get("authorities");
     }
 
     public boolean isExpired(String token){
@@ -54,7 +55,7 @@ public class JwtUtil {
             throw new SignatureException("Token signature invalid.");
         }
         catch (Exception e){
-            throw new RuntimeException("Token could be parsed.");
+            throw new RuntimeException("Token could be parsed: "+e.getMessage());
         }
     }
 
