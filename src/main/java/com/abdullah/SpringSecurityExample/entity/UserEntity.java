@@ -18,4 +18,7 @@ public class UserEntity {
     BigInteger id;
     String email;
     String password;
+    String address;
+    String phone;
+    String status;
 }
