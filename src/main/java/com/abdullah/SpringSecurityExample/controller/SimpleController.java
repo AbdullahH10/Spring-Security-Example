@@ -33,6 +33,9 @@ public class SimpleController {
             UserEntity user = UserEntity.builder()
                     .email(userData.getEmail())
                     .password(passwordEncoder.encode(userData.getPassword()))
+                    .address(userData.getAddress())
+                    .phone(userData.getPhone())
+                    .status(userData.getStatus())
                     .build();
 
             user = userService.saveUser(user);
