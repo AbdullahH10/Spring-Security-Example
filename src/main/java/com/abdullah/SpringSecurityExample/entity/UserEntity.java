@@ -1,5 +1,6 @@
 package com.abdullah.SpringSecurityExample.entity;
 
+import com.abdullah.SpringSecurityExample.authority.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,4 +22,5 @@ public class UserEntity {
     String address;
     String phone;
     String status;
+    Role role;
 }

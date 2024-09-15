@@ -1,5 +1,6 @@
 package com.abdullah.SpringSecurityExample.dto;
 
+import com.abdullah.SpringSecurityExample.authority.Role;
 import lombok.*;
 
 @Getter
@@ -7,9 +8,11 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpRequestDTO {
+public class CreateAdminDTO {
     String email;
     String password;
     String address;
     String phone;
+    String status;
+    Role role;
 }
