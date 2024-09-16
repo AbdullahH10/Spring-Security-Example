@@ -55,7 +55,7 @@ public class JwtUtil {
             throw new SignatureException("Token signature invalid.");
         }
         catch (Exception e){
-            throw new RuntimeException("Token could be parsed: "+e.getMessage());
+            throw new RuntimeException("Token could not be parsed: "+e.getMessage());
         }
     }
 

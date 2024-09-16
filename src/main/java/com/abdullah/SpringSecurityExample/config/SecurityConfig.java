@@ -1,5 +1,6 @@
 package com.abdullah.SpringSecurityExample.config;
 
+import com.abdullah.SpringSecurityExample.authority.Role;
 import com.abdullah.SpringSecurityExample.filter.JwtFilter;
 import com.abdullah.SpringSecurityExample.provider.JwtAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static com.abdullah.SpringSecurityExample.authority.Permission.READ;
+import static com.abdullah.SpringSecurityExample.authority.Permission.WRITE;
+import static com.abdullah.SpringSecurityExample.authority.Permission.UPDATE;
+import static com.abdullah.SpringSecurityExample.authority.Permission.DELETE;
 
 @Configuration
 @EnableWebSecurity
@@ -30,7 +34,7 @@ public class SecurityConfig {
             return authenticationConfiguration.getAuthenticationManager();
         }
         catch (Exception e) {
-            throw new RuntimeException("Failed to configure Authentication Manager: "+e.getMessage());
+            throw new RuntimeException("Failed to configure authentication manager: "+e.getMessage());
         }
     }
 
@@ -40,7 +44,7 @@ public class SecurityConfig {
            authManBuilder.authenticationProvider(jwtAuthenticationProvider);
         }
         catch (Exception e) {
-            throw new RuntimeException("Failed to register Authentication Providers: "+e.getMessage());
+            throw new RuntimeException("Failed to register authentication providers: "+e.getMessage());
         }
     }
 
@@ -50,6 +54,19 @@ public class SecurityConfig {
             http
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(requests -> requests
+                            .requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
+                            .requestMatchers("/admin/**").hasAnyAuthority(
+                                    READ.getPermission(),
+                                    WRITE.getPermission(),
+                                    UPDATE.getPermission(),
+                                    DELETE.getPermission()
+                            )
+                            .requestMatchers("/message").hasRole(Role.USER.name())
+                            .requestMatchers("/message").hasAnyAuthority(
+                                    READ.getPermission(),
+                                    WRITE.getPermission(),
+                                    UPDATE.getPermission()
+                            )
                             .requestMatchers("/signup").permitAll()
                             .requestMatchers("/login").permitAll()
                             .anyRequest().authenticated());

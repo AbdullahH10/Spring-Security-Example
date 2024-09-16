@@ -1,8 +1,10 @@
 package com.abdullah.SpringSecurityExample.controller;
 
+import com.abdullah.SpringSecurityExample.authority.Role;
 import com.abdullah.SpringSecurityExample.dto.LoginRequestDTO;
 import com.abdullah.SpringSecurityExample.dto.ResponseDTO;
 import com.abdullah.SpringSecurityExample.dto.SignUpRequestDTO;
+import com.abdullah.SpringSecurityExample.dto.TokenDTO;
 import com.abdullah.SpringSecurityExample.entity.UserEntity;
 import com.abdullah.SpringSecurityExample.service.UserService;
 import com.abdullah.SpringSecurityExample.util.JwtUtil;
@@ -12,20 +14,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping()
-public class SimpleController {
+public class UserController {
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignUpRequestDTO userData){
@@ -35,7 +42,8 @@ public class SimpleController {
                     .password(passwordEncoder.encode(userData.getPassword()))
                     .address(userData.getAddress())
                     .phone(userData.getPhone())
-                    .status(userData.getStatus())
+                    .status("active")
+                    .role(Role.USER)
                     .build();
 
             user = userService.saveUser(user);
@@ -71,7 +79,11 @@ public class SimpleController {
                     .body(ResponseDTO.builder()
                             .statusCode(HttpStatus.OK)
                             .message("Login successful")
-                            .data(token)
+                            .data(
+                                    TokenDTO.builder()
+                                            .token(token)
+                                            .build()
+                            )
                             .build());
         }
         catch (Exception e){
@@ -91,7 +103,7 @@ public class SimpleController {
                     .body(ResponseDTO.builder()
                             .statusCode(HttpStatus.OK)
                             .message("Request successful.")
-                            .data("Hello World!")
+                            .data("Hello User!")
                             .build());
         }
         catch (Exception e){
