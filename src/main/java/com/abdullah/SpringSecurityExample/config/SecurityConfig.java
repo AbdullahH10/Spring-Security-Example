@@ -34,7 +34,7 @@ public class SecurityConfig {
             return authenticationConfiguration.getAuthenticationManager();
         }
         catch (Exception e) {
-            throw new RuntimeException("Failed to configure Authentication Manager: "+e.getMessage());
+            throw new RuntimeException("Failed to configure authentication manager: "+e.getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ public class SecurityConfig {
            authManBuilder.authenticationProvider(jwtAuthenticationProvider);
         }
         catch (Exception e) {
-            throw new RuntimeException("Failed to register Authentication Providers: "+e.getMessage());
+            throw new RuntimeException("Failed to register authentication providers: "+e.getMessage());
         }
     }
 

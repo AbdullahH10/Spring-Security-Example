@@ -1,5 +1,6 @@
 package com.abdullah.SpringSecurityExample.controller;
 
+import com.abdullah.SpringSecurityExample.authority.Role;
 import com.abdullah.SpringSecurityExample.dto.CreateAdminDTO;
 import com.abdullah.SpringSecurityExample.dto.ResponseDTO;
 import com.abdullah.SpringSecurityExample.entity.UserEntity;
@@ -27,7 +28,7 @@ public class AdminController {
                     .address(admin.getAddress())
                     .phone(admin.getPhone())
                     .status(admin.getStatus())
-                    .role(admin.getRole())
+                    .role(Role.ADMIN)
                     .build();
 
             adminEntity = userService.saveUser(adminEntity);

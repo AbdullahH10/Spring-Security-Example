@@ -14,5 +14,4 @@ public class CreateAdminDTO {
     String address;
     String phone;
     String status;
-    Role role;
 }

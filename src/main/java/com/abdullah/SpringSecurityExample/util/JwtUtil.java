@@ -46,7 +46,6 @@ public class JwtUtil {
 
     private Claims getClaims(String token){
         try{
-            System.out.println("Key: "+SECRET_KEY.toString());
             JwtParser parser = Jwts.parser()
                     .verifyWith(SECRET_KEY)
                     .build();
